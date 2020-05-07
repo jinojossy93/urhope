@@ -91,13 +91,6 @@ def base():
     return render_template('home.html')
 
 
-
-@app.route('/index')
-def index():
-    return render_template('home.html')
-
-
-
 @app.route('/signup/', methods=['GET', 'POST'])
 def signup():
     if request.method == 'POST' and 'username' in request.form \
@@ -236,7 +229,7 @@ def form():
 @app.route('/home', methods=['GET', 'POST'])
 def home():
     if not session.get('logged_in'):
-        return redirect(url_for('logout'))
+        return redirect(url_for('login'))
     else:
         if session['role'] == 'v':
             return render_template('home.html')
@@ -286,7 +279,7 @@ def admin_check():
 @app.route('/reg_ngos')
 def reg_ngos():
         if not session.get('logged_in'):
-            return redirect(url_for('logout'))
+            return redirect(url_for('login'))
         db = get_db()
         c = db.cursor()
         role="n"
@@ -327,7 +320,7 @@ def del_ngo(id):
 @app.route('/reg_vols')
 def reg_vols():
         if not session.get('logged_in'):
-            return redirect(url_for('logout'))
+            return redirect(url_for('login'))
         db = get_db()
         c = db.cursor()
         role="v"
@@ -345,7 +338,7 @@ def reg_vols():
 def del_vol(id):
     id=id
     if not session.get('logged_in'):
-        return redirect(url_for('logout'))
+        return redirect(url_for('login'))
     db = get_db()
     c = db.cursor()
     role="v"
@@ -421,7 +414,7 @@ def download_data(id):
 @app.route('/logs')
 def logs():
     if not session.get('logged_in'):
-        return redirect(url_for('logout'))
+        return redirect(url_for('login'))
 
     log_file = open('logs.log', 'r')
 
@@ -469,7 +462,7 @@ def edit_profile(id):
 @app.route('/update/<uname>/', methods=['GET', 'POST'])
 def update_pro(uname):
     if not session.get('logged_in'):
-        return redirect(url_for('logout'))
+        return redirect(url_for('login'))
     else:
             username = session['username']
             role = session['role']
@@ -559,7 +552,7 @@ def update_pro(uname):
 @app.route('/create-task', methods=['GET', 'POST'])
 def create_task():
     if not session.get('logged_in'):
-        return redirect(url_for('logout'))
+        return redirect(url_for('login'))
     elif session['role'] == 'n':
         if request.method == 'POST':
             task = request.form['task']
@@ -604,7 +597,7 @@ def create_task():
 def edit_task(id):
     id=id
     if not session.get('logged_in'):
-        return redirect(url_for('logout'))
+        return redirect(url_for('login'))
     elif session['role'] == 'n':
         if request.method == 'POST':
             task = request.form['task']
@@ -655,7 +648,7 @@ def edit_task(id):
 def delete_task(id):
     id=id
     if not session.get('logged_in'):
-        return redirect(url_for('logout'))
+        return redirect(url_for('login'))
     elif session['role'] == 'n':
             db = get_db()
             c = db.cursor()
@@ -683,7 +676,7 @@ def delete_task(id):
 @app.route('/task_list')
 def task_list():
     if not session.get('logged_in'):
-        return redirect(url_for('logout'))
+        return redirect(url_for('login'))
 
     elif session['role'] == 'n':    
         grp_name = session['name']
@@ -728,7 +721,7 @@ def task_list():
                 applied.append(i[0])
         return render_template('task_list_v.html', id=id,l=len(app_data),applied=applied,len=len(data),data=data, app_data=app_data)
     else:
-        return redirect(url_for('logout'))  
+        return redirect(url_for('login'))  
 
 
 
@@ -736,7 +729,7 @@ def task_list():
 def apply_task(id):
     id=id
     if not session.get('logged_in'):
-        return redirect(url_for('logout'))
+        return redirect(url_for('login'))
     
     db = get_db()
     c = db.cursor()
@@ -799,7 +792,7 @@ def apply_task(id):
 def back_application(id):
     id=id
     if not session.get('logged_in'):
-        return redirect(url_for('logout'))
+        return redirect(url_for('login'))
     
     db = get_db()
     c = db.cursor()
@@ -887,40 +880,6 @@ def search_pincode(pincode):
         connect.close()
         return render_template('home.html', data=data)
     return render_template('home.html',data={})
-
-
-# @app.route('/home', methods=['GET', 'POST'])
-# def home():
-#     if not session.get('logged_in'):
-#         return redirect(url_for('login'))
-#     else:
-#         if session['role'] == 'v':
-#             return render_template('home.html')
-#         if session['role'] == 'n':
-#             return render_template('home.html')
-#         if session['role'] == 'a':
-#             return render_template('admin_profile.html')
-
-
-
-# @app.route('/msearch/<pincode>/', methods=['GET'])
-# def msearch_pincode(pincode):
-#     if pincode and re.fullmatch("[1-9][0-9]{5}", pincode):
-#         connect = get_db()
-#         pincode = int(pincode)
-#         c = connect.cursor()
-#         counter = 0
-#         where = ""
-#         for i in [0,-1,+1,-2,+2,-3,+3,-4,+4]:
-#             where += "m.pin='"+str(pincode+i) + "' OR "
-#         query = "select m.pin, phone, services, statename from members m join podata p on m.pin = p.pin where m.role='n' AND (" + where[:-4] +")"
-#         c.execute(query)
-#         data = c.fetchall()
-#         if data:
-#             c.close()
-#             connect.close()
-#             return render_template('home.html', data=data)
-#     return render_template('home.html',data={})
 
 @app.route('/relief')
 def relief():
@@ -1082,7 +1041,7 @@ def relief_send():
 
 @app.route('/helpline')
 def helpline():
-    return render_template('helpline.html')
+    return render_template('helpline/index.html')
 
 
 
