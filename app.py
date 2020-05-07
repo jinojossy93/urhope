@@ -26,8 +26,8 @@ import string
 import random
 import smtplib
 import logging
-import regex as re
-import pyodbc
+import re
+# import pyodbc
 import pandas as pd
 
 app = Flask(__name__)
