@@ -92,15 +92,6 @@ def base():
     return render_template('home.html')
 
 
-
-@app.route('/index')
-def index():
-    return render_template('index.html')
-
-@app.route('/find-relief-search')
-def find_relief():
-    return render_template('find_relief_search.html')
-
 @app.route('/signup/', methods=['GET', 'POST'])
 def signup():
     if request.method == 'POST' and 'username' in request.form \
@@ -891,7 +882,74 @@ def search_pincode(pincode):
         return render_template('home.html', data=data)
     return render_template('home.html',data={})
 
+@app.route('/relief')
+def relief():
+    return render_template('relief_pincode_page.html')
 
+@app.route('/find_relief', methods=['GET'])
+def find_relief():
+    pincode=request.args.get("pincode")
+    if pincode and re.fullmatch("[1-9][0-9]{5}", pincode):
+        connect = get_db()
+        pincode = int(pincode)
+        c = connect.cursor()
+        counter = 0
+        where = ""
+        for i in [0,-1,+1,-2,+2,-3,+3,-4,+4]:
+            where += "pin='"+str(pincode+i) + "' OR "
+        query = "select distinct p.statename, p.districtname, s.districthelpline, s.statehelpline, s.created_on from statewisehelplinenos s join podata p on s.statename = p.statename where (" + where[:-4] +")"
+        c.execute(query)
+        print(query)
+        data = c.fetchone()
+        if data:
+            c.close()
+            connect.close()
+            return render_template('find_relief.html', data=data, pin=str(pincode))
+    return render_template('find_relief.html',data={}, pin=str(pincode))
+
+@app.route('/initiatives/', methods=['GET'])
+def initiatives():
+    pincode = request.args.get("pincode")
+    type = request.args.get("type")
+    if pincode and re.fullmatch("[1-9][0-9]{5}", pincode):
+        connect = get_db()
+        pincode = int(pincode)
+        type = " ".join(type.split("_"))
+        c = connect.cursor()
+        counter = 0
+        where = ""
+        for i in [0,-1,+1,-2,+2,-3,+3,-4,+4]:
+            where += "p.pin='"+str(pincode+i) + "' OR "
+        query = "select distinct g.statename, g.districtname, title, description, helplinenumbers, link, eligibility, documents, duration, created_on, dropdown, g.id, g.sourcelink, g.relevantinfo from govtdata g join podata p on g.statename = p.statename where (" + where[:-4] +")" + " AND type='" + type + "'"
+        c.execute(query)
+        print(query)
+        data = c.fetchall()
+        if data:
+            pdata={'data':[]}
+            dropdown = []
+            for d in data:
+                pdata['data'].append({ 
+                    "statename": d[0], 
+                    "districtname": d[1], 
+                    "title": d[2], 
+                    "description": d[3],
+                    "helplinenumbers": d[4].split(";") if d[4] else [], 
+                    "links": d[5], 
+                    "eligibility": d[6], 
+                    "documents": d[7], 
+                    "duration": d[8],
+                    "created_on": d[9],
+                    "dropdown": d[10],
+                    "id": d[11],
+                    "sourcelink": d[12].replace("\n", "") if d[12] else "",
+                    "relevantinfo": d[13]
+                })
+                dropdown.append(d[10])
+        if data:
+            c.close()
+            connect.close()
+            return render_template('list_of_initiatives.html', data=pdata, type=type, dropdown=list(set(dropdown)))
+    return render_template('list_of_initiatives.html',data={}, type=type)
 
 @app.route('/searchresult',methods=['GET','POST'])
 def serch_result():
@@ -984,7 +1042,7 @@ def relief_send():
 
 @app.route('/helpline')
 def helpline():
-    return render_template('helpline.html')
+    return render_template('helpline/index.html')
 
 
 
