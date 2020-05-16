@@ -27,9 +27,9 @@ import random
 import smtplib
 import logging
 import re
-import pyodbc
-import pandas as pd
-import openpyxl
+#import pyodbc
+#import pandas as pd
+#import openpyxl
 
 
 app = Flask(__name__)
@@ -110,24 +110,24 @@ def signup():
         if 'username' in request.form \
             and 'password' in request.form and 'role' in request.form \
             and 'confirm' in request.form:
-            name = request.form['name']
-            username = request.form['username']
-            password = request.form['password']
-            confirmpassword = request.form['confirm']
-            pincode = request.form['pincode']
-            phone = request.form['phone']
+            name = request.form.get('name')
+            username = request.form.get('username')
+            password = request.form.get('password')
+            confirmpassword = request.form.get('confirm')
+            pincode = request.form.get('pincode')
+            phone = request.form.get('phone')
             role = request.form['role']
-            age = request.form['age']
-            currProfile = request.form['currProfile']
-            gender = request.form['gender']
-            regno = request.form['regno']
-            branch = request.form['branch']
-            website = request.form['website']
-            social = request.form['social']
-            about = request.form['about']
-            govtID = request.form['govtID']
-            address = request.form['address']
-            services = request.form['services']
+            age = request.form.get('age')
+            currProfile = request.args.get("currProfile")
+            gender = request.args.get("gender")
+            regno = request.form.get('regno')
+            branch = request.form.get("branch")
+            website = request.form.get("website")
+            social = request.form.get("social")
+            about = request.form.get("about")
+            govtID = request.form.get("govtID")
+            address = request.form.get("address")
+            services = request.form.get("services")
             try:
                 db = get_db()
                 c = db.cursor()
@@ -140,7 +140,7 @@ def signup():
                 else:
 
                     if password == confirmpassword:
-                        c.execute('insert into members (name, username, phone, pin, role, services, rego, branch, sex, age, currProfile, website, social, govtID, address, about, password ) values (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, md5(%s))'
+                        c.execute('insert into members (name, username, phone, pin, role, services, regno, branch, sex, age, currProfile, website, social, govtID, address, about, password ) values (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, md5(%s))'
                                   , (
                             name,
                             username,
