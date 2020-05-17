@@ -3,6 +3,7 @@
 # -*- coding: utf-8 -*-
 
 #__copyright__ = 'URHope'
+#__Core Developers__= 'Zuhair, Sharique, Jino, Furqan'
 
 from __future__ import print_function
 from flask import Flask, render_template, redirect, url_for, request, g
