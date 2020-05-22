@@ -201,6 +201,7 @@ def signup():
 
                     else:
                          flash('Passwords do not match!')
+			 return render_template('register.html')
             except Exception as e:
                 print(e)
                 flash("An error occured. Please try again.")
