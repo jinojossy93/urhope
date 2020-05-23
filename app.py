@@ -76,10 +76,9 @@ def serve():
 
 
 def get_db():
-     db = pymysql.connect(host=host, user=username, passwd=password,
-                          db=db_name, charset='utf8mb4')
-     return db
-
+      db = pymysql.connect(host=host, user=username, passwd=password,
+                           db=db_name, charset='utf8mb4')
+      return db
 
 
 
@@ -133,10 +132,11 @@ def signup():
             about = request.form.get("about")
             govtID = request.form.get("govtID")
             address = request.form.get("address")
-            serve = request.form.getlist("serve")
+            service = request.form.getlist("serve")
+            print(service)
 
             services = ''
-            for s in serve:
+            for s in service:
                 services = services + s + ','
 
             ph = len(phone)
@@ -157,7 +157,7 @@ def signup():
                 account = c.fetchone()
 
                 c.execute('select phone from members where phone = %s'
-                          , username)
+                          , phone)
                 phone = c.fetchone()
 
                 if account:
@@ -212,7 +212,6 @@ def signup():
                     else:
                          flash('Passwords do not match!')
                          return render_template('register.html')
-
             except Exception as e:
                 print(e)
                 flash("An error occured. Please try again.")
@@ -684,10 +683,10 @@ def update_pro():
                         sex = request.form.get('gender')
                         currProfile = request.form.get('currProfile')
                         about = request.form.get('about')
-                        serve = request.form.getlist("serve")
+                        service = request.form.getlist("serve")
 
                         services = ''
-                        for s in serve:
+                        for s in service:
                             services = services + s + ','                     
 
                         ph = len(phone)
@@ -748,10 +747,10 @@ def update_pro():
                         phone = request.form.get('phone')
                         pin = request.form.get('pin')
                         about = request.form.get('about')
-                        serve = request.form.getlist("serve")
+                        service = request.form.getlist("serve")
 
                         services = ''
-                        for s in serve:
+                        for s in service:
                             services = services + s + ','                                                
 
                         ph = len(phone)
@@ -1107,7 +1106,7 @@ def whatsapp(id):
     id = id
     db = get_db()
     c = db.cursor()
-    c.execute('select task_name,vol_name,vol_phone,task_id from application where id = %s and grp_email = %s',(id,session['username']))
+    c.execute('select task_name,vol_name,vol_phone,task_id from application where id = %s and grp_email = %s',(id, session['username']))
     task = c.fetchone()
 
     task_name = task[0]
@@ -1127,12 +1126,12 @@ def whatsapp(id):
     
     if opsys in MobOS:
         x = "https://api.whatsapp.com/send?phone=+91"+phone+"&text=Dear%20"+name+"%2C%0D%0A%0D%0AWe%20are%20glad%20that%20you%20have%20opted%20to%20volunteer%20for%20the%20task:%20"+task_name+",%20created%20by%20us.%0D%0A%0D%0AThank you so much.%0D%0A%0D%0AFor%20any%20queries%20you%20can%20contact%20us.%0D%0A%0D%0ARegards,%0D%0A"+session['name']
-        webbrowser.open_new_tab(x)
+        webbrowser.open(x,0)
         flash("Message Sent")
         return redirect(url_for('applied_vols',id=task_id))
     else: 
         x = "https://web.whatsapp.com/send?phone=+91"+phone+"&text=Dear%20"+name+"%2C%0D%0A%0D%0AWe%20are%20glad%20that%20you%20have%20opted%20to%20volunteer%20for%20the%20task:%20"+task_name+",%20created%20by%20us.%0D%0A%0D%0AThank you so much.%0D%0A%0D%0AFor%20any%20queries%20you%20can%20contact%20us.%0D%0A%0D%0ARegards,%0D%0A"+session['name']
-        webbrowser.open_new_tab(x)
+        webbrowser.open(x,0)
         flash("Message Sent")
         return redirect(url_for('applied_vols',id=task_id))
 
